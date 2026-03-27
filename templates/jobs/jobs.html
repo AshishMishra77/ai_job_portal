@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>All Jobs</h2>
+
+<div id="job-list">
+{% for job in jobs %}
+  <div class="card mb-3 p-3">
+    <h4>{{ job.title }}</h4>
+    <p>{{ job.description }}</p>
+
+    {% if user.role == 'candidate' %}
+    <button 
+      class="btn btn-primary"
+      hx-get="{% url 'apply_job_form' job.id %}" 
+      hx-target="#modal">
+      Apply
+    </button>
+    {% endif %}
+
+    {% if user.role == 'recruiter' %}
+    <a href="{% url 'view_applicants' job.id %}" class="btn btn-info">
+      View Applicants
+    </a>
+    {% endif %}
+  </div>
+{% endfor %}
+</div>
+
+<div id="modal"></div>
+
+{% endblock %}

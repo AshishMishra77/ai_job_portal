@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Recruiter Dashboard</h2>
+
+<p>Welcome {{ user.username }}</p>
+
+<a href="{% url 'create_job' %}" class="btn btn-success">Post Job</a>
+<a href="{% url 'jobs' %}" class="btn btn-primary">View Jobs</a>
+
+<h3>Your Job Applications</h3>
+{% if applications %}
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>Candidate</th>
+                <th>Job Title</th>
+                <th>Resume</th>
+                <th>ATS Score</th>
+                <th>AI Feedback</th>
+                <th>Status</th>
+                <th>Applied At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in applications %}
+            <tr>
+                <td>{{ app.candidate.username }}</td>
+                <td>{{ app.job.title }}</td>
+                <td>
+                    {% if app.resume %}
+                        <a href="{{ app.resume.url }}" target="_blank">View Resume</a>
+                    {% else %}
+                        No resume
+                    {% endif %}
+                </td>
+                <td>{{ app.score|default:"N/A" }}</td>
+                <td style="max-width: 400px; white-space: pre-wrap;">{{ app.ai_feedback|default:"No feedback yet" }}</td>
+                <td>{{ app.get_status_display }}</td>
+                <td>{{ app.created_at|date:"Y-m-d H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No applications found.</p>
+{% endif %}
+{% endblock %}

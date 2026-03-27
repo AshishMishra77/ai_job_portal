@@ -1,0 +1,12 @@
+<form 
+  method="POST"
+  hx-post="{% url 'apply_job' job.id %}" 
+  hx-target="#modal"
+  enctype="multipart/form-data"
+>
+  {% csrf_token %}
+
+  <input type="file" name="resume" accept=".pdf" class="form-control mb-2" required>
+
+  <button class="btn btn-success">Submit Application</button>
+</form>

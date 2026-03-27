@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Register</h2>
+
+<form method="POST">
+  {% csrf_token %}
+
+  <input type="text" name="username" class="form-control mb-2" placeholder="Username">
+  <input type="password" name="password" class="form-control mb-2" placeholder="Password">
+
+  <select name="role" class="form-control mb-2">
+    <option value="candidate">Candidate</option>
+    <option value="recruiter">Recruiter</option>
+  </select>
+
+  <button class="btn btn-success">Register</button>
+</form>
+
+{% if error %}
+<p class="text-danger mt-2">{{ error }}</p>
+{% endif %}
+
+{% endblock %}

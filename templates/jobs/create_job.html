@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Create Job</h2>
+
+<form method="POST">
+  {% csrf_token %}
+
+  <input type="text" name="title" class="form-control mb-2" placeholder="Job Title">
+  
+  <textarea name="description" class="form-control mb-2" placeholder="Job Description"></textarea>
+
+  <input type="text" name="skills" class="form-control mb-2" placeholder="Skills">
+
+  <button class="btn btn-success">Post Job</button>
+</form>
+
+{% endblock %}

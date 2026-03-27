@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-3">Applicants for: {{ job.title }}</h2>
+
+{% if applications %}
+
+  {% for app in applications %}
+    <div class="card p-3 mb-3 shadow-sm">
+
+      <!-- Candidate Name -->
+      <h5>{{ app.candidate.username }}</h5>
+
+      <!-- Score -->
+      {% if app.score %}
+        <p>Match Score: <strong>{{ app.score }}%</strong></p>
+
+        <div class="progress mb-2">
+          <div class="progress-bar bg-success score-bar" 
+               data-score="{{ app.score }}">
+          </div>
+        </div>
+      {% else %}
+        <p class="text-muted">Score not generated yet</p>
+      {% endif %}
+
+      <!-- AI Feedback -->
+      {% if app.ai_feedback %}
+        <div class="bg-light p-2 rounded mb-2">
+          <strong>AI Feedback:</strong>
+          <p style="white-space: pre-line;">{{ app.ai_feedback }}</p>
+        </div>
+      {% else %}
+        <p class="text-muted">No feedback available</p>
+      {% endif %}
+
+      <!-- Resume -->
+      {% if app.resume %}
+        <a href="{{ app.resume.url }}" class="btn btn-primary btn-sm" target="_blank">
+          Download Resume
+        </a>
+      {% else %}
+        <p class="text-danger">Resume not available</p>
+      {% endif %}
+
+    </div>
+  {% endfor %}
+
+{% else %}
+  <p>No applicants yet.</p>
+{% endif %}
+
+<!-- JS to set progress width -->
+<script>
+  document.querySelectorAll('.score-bar').forEach(function(bar) {
+    const score = bar.getAttribute('data-score');
+    bar.style.width = score + '%';
+    bar.innerText = score + '%';
+  });
+</script>
+
+{% endblock %}

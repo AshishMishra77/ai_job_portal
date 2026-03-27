@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ai_job_portal.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ai_job_portal_settings.settings')
 
 application = get_wsgi_application()
