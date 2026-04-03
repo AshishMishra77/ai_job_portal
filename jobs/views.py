@@ -28,6 +28,13 @@ def create_job(request):
         title = request.POST.get('title')
         description = request.POST.get('description')
         skills = request.POST.get('skills')
+        threshold_enabled = request.POST.get('threshold_enabled') == 'on'
+        
+        ats_threshold = request.POST.get('ats_threshold')
+        try:
+            ats_threshold = float(ats_threshold) if ats_threshold else 60.0
+        except ValueError:
+            ats_threshold = 60.0
 
         # Basic validation
         if not title or not description:
@@ -39,7 +46,10 @@ def create_job(request):
             title=title,
             description=description,
             skills=skills,
-            recruiter=request.user
+            recruiter=request.user,
+            ats_threshold = ats_threshold,
+            threshold_enabled = threshold_enabled,
+            
         )
 
         return redirect('jobs')

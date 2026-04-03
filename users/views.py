@@ -67,6 +67,12 @@ def logout_view(request):
 # DASHBOARD
 # -----------------------
 @login_required
+def my_applications(request):
+    return Application.objects.filter(candidate=request.user)\
+        .select_related('job')\
+        .only('status', 'job__title')
+
+@login_required
 def dashboard(request):
     user = request.user
     if user.role == 'recruiter':
@@ -82,7 +88,10 @@ def dashboard(request):
         })
 
     elif user.role == 'candidate':
-        return render(request, 'dashboard/candidate_dashboard.html')
+       
+        return render(request, 'dashboard/candidate_dashboard.html', {
+            'applications' : my_applications(request)
+        })
     return redirect('login')
 
 # -----------------------

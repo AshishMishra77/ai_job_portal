@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
-import threading
 
 from applications.models import Application
 from jobs.models import Job
@@ -90,15 +89,61 @@ def apply_job(request, job_id):
 # VIEW APPLICANTS (RECRUITER)
 # -----------------------
 @login_required
+def update_status(request, app_id):
+    application = get_object_or_404(Application, id=app_id)
+
+    # 🔐 Only recruiter can update
+    if application.job.recruiter != request.user:
+        return HttpResponseForbidden("Not allowed")
+
+    if request.method == "POST":
+        new_status = request.POST.get('status')
+
+        # ✅ Validate status
+        if new_status in dict(Application.STATUS_CHOICES):
+            application.status = new_status
+            application.save()
+
+    return redirect('view_applicants', job_id=application.job.id)
+
+@login_required
+def update_threshold(request, job_id):
+    job = get_object_or_404(Job, id=job_id)
+
+    # 🔐 Only recruiter can change settings
+    if job.recruiter != request.user:
+        return HttpResponseForbidden("Not allowed")
+
+    if request.method == "POST":
+        threshold = request.POST.get("ats_threshold")
+        enabled = request.POST.get("threshold_enabled")
+
+        # ✅ Update threshold safely
+        try:
+            job.ats_threshold = float(threshold)
+        except (TypeError, ValueError):
+            pass  # ignore invalid input
+
+        # ✅ Checkbox handling
+        job.threshold_enabled = True if enabled == "on" else False
+
+        job.save()
+
+    return redirect("view_applicants", job_id=job.id)
+
+@login_required
 def view_applicants(request, job_id):
     job = get_object_or_404(Job, id=job_id)
 
     applications = Application.objects.filter(job=job).select_related('candidate')
 
-    # 🔥 Filter by score (Week 4 feature)
-    min_score = request.GET.get('min_score')
-    if min_score:
-        applications = applications.filter(score__gte=min_score)
+    # 🔥 Filter strictly based on ATS threshold
+    if job.threshold_enabled and job.ats_threshold is not None:
+        applications = applications.filter(score__isnull=False, score__gte=job.ats_threshold)
+
+    status = request.GET.get('status')
+    if status:
+        applications = applications.filter(status=status)
 
     # 🔥 Sort by score (top candidates first)
     applications = applications.order_by('-score', '-created_at')

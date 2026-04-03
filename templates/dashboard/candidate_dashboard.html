@@ -5,5 +5,12 @@
 
 <p>Welcome {{ user.username }}</p>
 
+{% for app in applications %}
+  <div>
+    <h4>{{ app.job.title }}</h4>
+    <p>Status: {{ app.status }}</p>
+  </div>
+{% endfor %}
+
 <a href="{% url 'jobs' %}" class="btn btn-primary">Browse Jobs</a>
 {% endblock %}
